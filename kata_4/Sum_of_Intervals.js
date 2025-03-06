@@ -1,3 +1,4 @@
+//* first solve
 // function sumIntervals(intervals) {
 //   for (let i = 0; i < intervals.length; i++) {
 //     let bigNumber = intervals[i][1];
@@ -35,6 +36,82 @@
 //   }
 //   return length;
 // }
+//* second solve
+// function sumIntervals(intervals) {
+//   if (intervals.length == 1) return intervals[0][1] - intervals[0][0];
+//   if (intervals.length == 0) return 0;
+//   // intervals = quickSortOfNested(intervals);
+//   intervals.sort((a, b) => a[0] - b[0]);
+//   return getLengthsOf(intervals);
+// }
+// // call stack error :(
+// function quickSortOfNested(array) {
+//   if (array.length <= 1) return array;
+//   let middleIndex = parseInt(array.length / 2);
+//   let middleItem = array[middleIndex];
+//   let small = [];
+//   let big = [];
+//   for (let i = 0; i < array.length; i++) {
+//     if (i == middleIndex) continue;
+
+//     if (array[i][0] < middleItem[0]) {
+//       small.push(array[i]);
+//       continue;
+//     }
+//     if (array[i][1] > middleItem[1]) {
+//       big.push(array[i]);
+//       continue;
+//     }
+//     if (array[i][1] < middleItem[1]) {
+//       small.push(array[i]);
+//     }
+//   }
+//   return quickSortOfNested(small)
+//     .concat([middleItem])
+//     .concat(quickSortOfNested(big));
+// }
+
+// function getLengthsOf(intervals) {
+//   if (intervals.length == 1) return intervals[0][1] - intervals[0][0];
+//   if (intervals.length == 0) return 0;
+//   let first = intervals.shift();
+//   let second = intervals.shift();
+//   if (first[1] > second[0]) {
+//     let small = Math.min(first[0], first[0]);
+//     let big = Math.max(first[1], second[1]);
+//     let mergedIntervals = [small, big];
+//     intervals.unshift(mergedIntervals);
+//     return getLengthsOf(intervals);
+//   } else {
+//     intervals.unshift(second);
+//   }
+//   let lengthOfFirst = first[1] - first[0];
+//   return lengthOfFirst + getLengthsOf(intervals);
+// }
+//* third solve 
+// this is called sweep line algorithm 
+// used when you have collapsed events
+function sumIntervals(intervals) {
+  let events = [];
+  for(let i = 0; i < intervals.length; i++) {
+    events.push([intervals[i][0], 1]);
+    events.push([intervals[i][1], -1]);
+  }
+  events.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  let activeInterval = 0;
+  let previousX = null;
+  let totalLength = 0;
+
+  for(let [x, change] of events) {
+    if(activeInterval > 0 && previousX != null) {
+      totalLength += x - previousX;
+    }
+    console.log(activeInterval, previousX, x, totalLength);
+    activeInterval += change;
+    previousX = x
+  }
+  return totalLength;
+}
 console.log(
   sumIntervals([
     [1, 4],
@@ -51,54 +128,4 @@ console.log(
     [5, 11],
   ])
 );
-function sumIntervals(intervals) {
-  if (intervals.length == 1) return intervals[0][1] - intervals[0][0];
-  if (intervals.length == 0) return 0;
-  // intervals = quickSortOfNested(intervals);
-  intervals.sort((a, b) => a[0] - b[0]);
-  return getLengthsOf(intervals);
-}
-// call stack error :(
-function quickSortOfNested(array) {
-  if (array.length <= 1) return array;
-  let middleIndex = parseInt(array.length / 2);
-  let middleItem = array[middleIndex];
-  let small = [];
-  let big = [];
-  for (let i = 0; i < array.length; i++) {
-    if (i == middleIndex) continue;
-
-    if (array[i][0] < middleItem[0]) {
-      small.push(array[i]);
-      continue;
-    }
-    if (array[i][1] > middleItem[1]) {
-      big.push(array[i]);
-      continue;
-    }
-    if (array[i][1] < middleItem[1]) {
-      small.push(array[i]);
-    }
-  }
-  return quickSortOfNested(small)
-    .concat([middleItem])
-    .concat(quickSortOfNested(big));
-}
-
-function getLengthsOf(intervals) {
-  if (intervals.length == 1) return intervals[0][1] - intervals[0][0];
-  if (intervals.length == 0) return 0;
-  let first = intervals.shift();
-  let second = intervals.shift();
-  if (first[1] > second[0]) {
-    let small = Math.min(first[0], first[0]);
-    let big = Math.max(first[1], second[1]);
-    let mergedIntervals = [small, big];
-    intervals.unshift(mergedIntervals);
-    return getLengthsOf(intervals);
-  } else {
-    intervals.unshift(second);
-  }
-  let lengthOfFirst = first[1] - first[0];
-  return lengthOfFirst + getLengthsOf(intervals);
-}
+// 
