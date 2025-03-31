@@ -1,3 +1,5 @@
+// # codewars link: https://www.codewars.com/kata/5629db57620258aa9d000014
+// # git hub link: https://github.com/Yossab55/problem_solving/blob/main/kata_4/string_mix.js
 function mix(s1, s2) {
   s1 = countChars(s1);
   s2 = countChars(s2);
@@ -95,9 +97,9 @@ s2 = "my frie n d Joh n has ma n y ma n y frie n ds n&";
 console.log(mix(s1, s2)); // "1:mmmmmm/=:nnnnnn/1:aaaa/1:hhh/2:yyy/2:dd/2:ff/2:ii/2:rr/=:ee/=:ss"
 
 
-// clever solve on code wars 
-const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+// #clever solve on code wars 
 
+// const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 // function mix(s1, s2) {
 //   return alphabet
 //     .map((char) => {
@@ -120,3 +122,46 @@ const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 //     .map((c) => `${c.src}:${c.char.repeat(c.count)}`)
 //     .join("/");
 // }
+
+//# refactor by grok ai 
+function mix(s1, s2) {
+  const count1 = countLetters(s1);
+  const count2 = countLetters(s2);
+  const result = [];
+
+  // Get all unique letters from both counts
+  const allLetters = [
+    ...new Set([...Object.keys(count1), ...Object.keys(count2)]),
+  ];
+
+  // Process each letter
+  for (const letter of allLetters) {
+    const freq1 = count1[letter] || 0;
+    const freq2 = count2[letter] || 0;
+    const maxFreq = Math.max(freq1, freq2);
+
+    if (maxFreq <= 1) continue;
+
+    const prefix = freq1 === freq2 ? "=" : freq1 > freq2 ? "1" : "2";
+    result.push(`${prefix}:${letter.repeat(maxFreq)}`);
+  }
+
+  // Sort by length (descending) and then lexicographically
+  return result
+    .sort((a, b) => b.length - a.length || a.localeCompare(b))
+    .join("/");
+}
+
+function countLetters(str) {
+  const counts = {};
+  for (const char of str) {
+    if (/[a-z]/.test(char)) {
+      counts[char] = (counts[char] || 0) + 1;
+    }
+  }
+  // Filter out counts <= 1
+  for (const char in counts) {
+    if (counts[char] <= 1) delete counts[char];
+  }
+  return counts;
+}
