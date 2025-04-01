@@ -1,3 +1,5 @@
+//# codeWars problem: https://www.codewars.com/kata/51b66044bce5799a7f000003
+//# github solve: https://github.com/Yossab55/problem_solving/blob/main/kata_4/Roman_Numerals_Helper.js
 class RomanNumerals {
   static romanToNumber = {
     M: 1000,
