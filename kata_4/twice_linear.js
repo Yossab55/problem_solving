@@ -32,9 +32,10 @@ After processing n + 1 elements, the n-th element will be the last one extracted
 function dblLinear(n) {
   const u = new Heap();
   u.addElement(1);
-  for (let i = 0; i < n; i++) {
-    u.addElement(y(u.getElementBy(i)));
-    u.addElement(z(u.getElementBy(i)));
+  for (let i = 0; i < n; i+=2) {
+    const small = u.extractElement();
+    u.addElement(y(small));
+    u.addElement(z(small));
   }
   return u;
 }
@@ -43,29 +44,48 @@ class Heap {
     this.heap = [];
     this.tracked = new Set();
   }
+  addElement(number) {
+    if (this.tracked.has(number)) return;
+    this.tracked.add(number);
+    this.heap.push(number);
+    //Todo sort the array!
+  }
+  extractElement() {
+    let smallestItem = this.heap[0];
+    this.heap[0] = this.heap[this.heap.length - 1];
+    this.heap[this.heap.length - 1] = smallestItem;
+    this.heap.pop();
+    this.#sortTheHeap();
+    return smallestItem;
+  }
+  #sortTheHeap() {
+    const parent = this.heap[0];
+    if (parent == undefined) return;
+    const rightChild = this.rightChildOfParent(0);
+    const leftChild = this.leftChildOfParent(0);
 
-  addElement(element) {
-    this.heap.push(element);
-    let checkIndexBiggerThanOne = true;
-    do {
-      let indexChild = this.heap.indexOf(element);
-      let indexParent = this.getIndexParentBy(indexChild);
-      checkIndexBiggerThanOne = indexParent > 0 ? true : false;
-      if (this.heap[indexParent] > element) {
-        this.swapParentAndChild(indexParent, indexChild);
-      } else break;
-    } while (checkIndexBiggerThanOne);
+    if (parent <= this.heap[rightChild] && parent <= this.heap[leftChild])
+      return;
+
+    let index;
+    if (this.heap[rightChild] < this.heap[leftChild]) index = rightChild;
+    else if (this.heap[rightChild] > this.heap[leftChild]) index = leftChild;
+    else if (this.heap[rightChild]) index = rightChild;
+    else if (this.heap[leftChild]) index = leftChild;
+
+    if (index) {
+      let temp = parent;
+      this.heap[0] = this.heap[index];
+      this.heap[index] = temp;
+    }
   }
-  getIndexParentBy(indexChild) {
-    return Math.floor((indexChild - 1) / 2);
+  rightChildOfParent(index) {
+    return index * 2 + 1;
+    // return this.heap[childIndex] || undefined;
   }
-  swapParentAndChild(indexParent, indexChild) {
-    let temp = this.heap[indexParent];
-    this.heap[indexParent] = this.heap[indexChild];
-    this.heap[indexChild] = temp;
-  }
-  getElementBy(index) {
-    return this.heap[index];
+  leftChildOfParent(index) {
+    return index * 2 + 2;
+    // return this.heap[childIndex] || undefined;
   }
 }
 function y(x) {
@@ -75,7 +95,7 @@ function z(x) {
   return 3 * x + 1;
 }
 console.log(dblLinear(10), 22);
-// console.log(dblLinear(20), 57);
+console.log(dblLinear(20), 57);
 // console.log(dblLinear(30), 91);
 // console.log(dblLinear(50), 175);
 // console.log(dblLinear(100), 447);
