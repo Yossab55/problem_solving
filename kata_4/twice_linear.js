@@ -32,7 +32,7 @@ After processing n + 1 elements, the n-th element will be the last one extracted
 function dblLinear(n) {
   const u = new Heap();
   u.addElement(1);
-  for (let i = 0; i < n; i+=2) {
+  for (let i = 0; i < n; i += 2) {
     const small = u.extractElement();
     u.addElement(y(small));
     u.addElement(z(small));
@@ -59,33 +59,36 @@ class Heap {
     return smallestItem;
   }
   #sortTheHeap() {
-    const parent = this.heap[0];
-    if (parent == undefined) return;
-    const rightChild = this.rightChildOfParent(0);
-    const leftChild = this.leftChildOfParent(0);
+    let parentIndex = 0;
+    do {
+      let parent = this.heap[parentIndex];
+      const rightChild = this.rightChildOfParent(parentIndex);
+      const leftChild = this.leftChildOfParent(parentIndex);
 
-    if (parent <= this.heap[rightChild] && parent <= this.heap[leftChild])
-      return;
+      if (parent <= this.heap[rightChild] && parent <= this.heap[leftChild])
+        return;
 
-    let index;
-    if (this.heap[rightChild] < this.heap[leftChild]) index = rightChild;
-    else if (this.heap[rightChild] > this.heap[leftChild]) index = leftChild;
-    else if (this.heap[rightChild]) index = rightChild;
-    else if (this.heap[leftChild]) index = leftChild;
+      let indexToSwap;
+      if (this.heap[rightChild] < this.heap[leftChild])
+        indexToSwap = rightChild;
+      else if (this.heap[rightChild] > this.heap[leftChild])
+        indexToSwap = leftChild;
+      else if (this.heap[rightChild]) indexToSwap = rightChild;
+      else if (this.heap[leftChild]) indexToSwap = leftChild;
 
-    if (index) {
-      let temp = parent;
-      this.heap[0] = this.heap[index];
-      this.heap[index] = temp;
-    }
+      if (indexToSwap) {
+        let temp = parent;
+        this.heap[parentIndex] = this.heap[indexToSwap];
+        this.heap[indexToSwap] = temp;
+      }
+      parentIndex = indexToSwap;
+    } while (parentIndex != undefined || parentIndex < this.heap.length);
   }
   rightChildOfParent(index) {
     return index * 2 + 1;
-    // return this.heap[childIndex] || undefined;
   }
   leftChildOfParent(index) {
     return index * 2 + 2;
-    // return this.heap[childIndex] || undefined;
   }
 }
 function y(x) {
