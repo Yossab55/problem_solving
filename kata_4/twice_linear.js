@@ -1,43 +1,14 @@
+// In the name of Cross
 //# code wars problem: https://www.codewars.com/kata/5672682212c8ecf83e000050
-/**
- * ! issues you have 
- * Correct the Heap Implementation:
-
-
-* * Ensure that addElement properly maintains the min-heap property by recursively checking and fixing the heap after each insertion (heapify-up).
-
-* ? Add a method to extract the smallest element from the heap (heapify-down), which is crucial for generating the sequence in order.
-
-// !heapify-down maybe is the best 
-Fix the Sequence Generation Logic:
-
-Use the heap to always process the smallest unprocessed element. This means:
-
-Extract the smallest element from the heap.
-
-Generate y and z from this element.
-
-Add y and z to the heap if they haven't been added before (use a Set to track seen elements).
-
-Repeat this process until you've processed n + 1 elements (since the sequence is 0-indexed).
-
-Add Deduplication:
-
-Maintain a Set to track which numbers have already been added to the heap to avoid duplicates.
-
-Return the Correct Value:
-
-After processing n + 1 elements, the n-th element will be the last one extracted from the heap. Return this value.
- */
 function dblLinear(n) {
   const u = new Heap();
   u.addElement(1);
-  for (let i = 0; i < n; i += 2) {
+  for (let i = 0; i < n; i++) {
     const small = u.extractElement();
     u.addElement(y(small));
     u.addElement(z(small));
   }
-  return u;
+  return u.getFirstElement();
 }
 class Heap {
   constructor() {
@@ -48,47 +19,67 @@ class Heap {
     if (this.tracked.has(number)) return;
     this.tracked.add(number);
     this.heap.push(number);
-    //Todo sort the array!
+    this.#sortAfterAdding();
+  }
+  #sortAfterAdding() {
+    let tempHeap = this.heap;
+    for (let i = tempHeap.length - 1; i >= 0; i--) {
+      const parentIndex = this.#parentIndexFromChild(i);
+      let parent = tempHeap[parentIndex];
+      if (parent > tempHeap[i]) {
+        const tempElement = parent;
+        tempHeap[parentIndex] = tempHeap[i];
+        tempHeap[i] = tempElement;
+        i = parentIndex + 1;
+      } else break;
+    }
+  }
+  #parentIndexFromChild(index) {
+    return Math.floor((index - 1) / 2);
   }
   extractElement() {
     let smallestItem = this.heap[0];
     this.heap[0] = this.heap[this.heap.length - 1];
     this.heap[this.heap.length - 1] = smallestItem;
     this.heap.pop();
-    this.#sortTheHeap();
+    this.#sortAfterDeletion(0);
     return smallestItem;
   }
-  #sortTheHeap() {
-    let parentIndex = 0;
-    do {
-      let parent = this.heap[parentIndex];
-      const rightChild = this.rightChildOfParent(parentIndex);
-      const leftChild = this.leftChildOfParent(parentIndex);
+  #sortAfterDeletion(index) {
+    while (true) {
+      const leftChild = this.#leftChildOfParent(index);
+      const rightChild = this.#rightChildOfParent(index);
+      let smallest = index;
 
-      if (parent <= this.heap[rightChild] && parent <= this.heap[leftChild])
-        return;
-
-      let indexToSwap;
-      if (this.heap[rightChild] < this.heap[leftChild])
-        indexToSwap = rightChild;
-      else if (this.heap[rightChild] > this.heap[leftChild])
-        indexToSwap = leftChild;
-      else if (this.heap[rightChild]) indexToSwap = rightChild;
-      else if (this.heap[leftChild]) indexToSwap = leftChild;
-
-      if (indexToSwap) {
-        let temp = parent;
-        this.heap[parentIndex] = this.heap[indexToSwap];
-        this.heap[indexToSwap] = temp;
+      if (
+        leftChild < this.heap.length &&
+        this.heap[leftChild] < this.heap[smallest]
+      ) {
+        smallest = leftChild;
       }
-      parentIndex = indexToSwap;
-    } while (parentIndex != undefined || parentIndex < this.heap.length);
+      if (
+        rightChild < this.heap.length &&
+        this.heap[rightChild] < this.heap[smallest]
+      ) {
+        smallest = rightChild;
+      }
+      if (smallest === index) break;
+
+      [this.heap[index], this.heap[smallest]] = [
+        this.heap[smallest],
+        this.heap[index],
+      ];
+      index = smallest;
+    }
   }
-  rightChildOfParent(index) {
+  #rightChildOfParent(index) {
     return index * 2 + 1;
   }
-  leftChildOfParent(index) {
+  #leftChildOfParent(index) {
     return index * 2 + 2;
+  }
+  getFirstElement() {
+    return this.heap[0];
   }
 }
 function y(x) {
@@ -99,6 +90,24 @@ function z(x) {
 }
 console.log(dblLinear(10), 22);
 console.log(dblLinear(20), 57);
-// console.log(dblLinear(30), 91);
-// console.log(dblLinear(50), 175);
-// console.log(dblLinear(100), 447);
+console.log(dblLinear(30), 91);
+console.log(dblLinear(50), 175);
+console.log(dblLinear(100), 447);
+// deep seek solution
+// function dblLinear(n) {
+//   const u = [1];
+//   let i = 0,
+//     j = 0;
+
+//   while (u.length <= n) {
+//     const nextY = 2 * u[i] + 1;
+//     const nextZ = 3 * u[j] + 1;
+//     const next = Math.min(nextY, nextZ);
+//     u.push(next);
+
+//     if (next === nextY) i++;
+//     if (next === nextZ) j++;
+//   }
+
+//   return u[n];
+// }
