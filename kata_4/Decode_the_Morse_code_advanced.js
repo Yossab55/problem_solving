@@ -1,30 +1,31 @@
+String.prototype.customTrim = function (char = " ") {
+  let indexOfCutStart = 0;
+  let indexOfCutEnd = this.length;
+
+  for (let i = 0; i < this.length; i++) {
+    if (this[i] == char) indexOfCutStart++;
+    else break;
+  }
+
+  for (let j = this.length - 1; j >= 0; j--) {
+    if (this[j] == char) indexOfCutEnd--;
+    else break;
+  }
+  return this.slice(indexOfCutStart, indexOfCutEnd);
+};
 function decodeBits(bits) {
-  // ToDo: Accept 0's and 1's, return dots, dashes and spaces
-  // const GRAPH_FOR_ONE = {
-  //   11: {
-  //     1: "-",
-  //     0: ".",
-  //   },
-  // };
-  // const GRAPH_FOR_ZERO = {
-  //   1: "",
-  //   0: " ",
-  // };
-  // const GRAPH_ROOT = {
-  //   11: GRAPH_FOR_ONE,
-  //   "00": GRAPH_FOR_ZERO,
-  // };
-  // be careful this bunch of 00000000000000 will make a problem because it's 7 long chars
+  bits = bits.customTrim("0");
+  console.log(bits);
+  const CODE = {
+    wordSpace: "0".repeat(7),
+    charSpace: "0".repeat(3),
+    dash: "1".repeat(3),
+    dot: "11",
+    empty: "00",
+  };
   let result = "";
   let j = 0;
   while (j < bits.length) {
-    const CODE = {
-      wordSpace: "0".repeat(7),
-      charSpace: "0".repeat(3),
-      dash: "1".repeat(3),
-      dot: "11",
-      empty: "00",
-    };
     let slice = bits.slice(j, j + 7);
     if (slice == CODE.wordSpace) {
       j = j + 7 * 2;
@@ -44,7 +45,6 @@ function decodeBits(bits) {
       continue;
     }
     slice = bits.slice(j, j + 2);
-    console.log(slice);
 
     if (slice == CODE.dot) {
       j = j + 1 * 2;
@@ -60,14 +60,66 @@ function decodeBits(bits) {
   }
   return result;
 }
-
+function getFrequencyFrom(bits) {}
 function decodeMorse(morseCode) {
-  // ToDo: Accept dots, dashes and spaces, return human-readable message
+  const MORSE_CODE = {
+    ".-": "A",
+    "-...": "B",
+    "-.-.": "C",
+    "-..": "D",
+    ".": "E",
+    "..-.": "F",
+    "--.": "G",
+    "....": "H",
+    "..": "I",
+    ".---": "J",
+    "-.-": "K",
+    ".-..": "L",
+    "--": "M",
+    "-.": "N",
+    "---": "O",
+    ".--.": "P",
+    "--.-": "Q",
+    ".-.": "R",
+    "...": "S",
+    "-": "T",
+    "..-": "U",
+    "...-": "V",
+    ".--": "W",
+    "-..-": "X",
+    "-.--": "Y",
+    "--..": "Z",
+    "-----": "0",
+    ".----": "1",
+    "..---": "2",
+    "...--": "3",
+    "....-": "4",
+    ".....": "5",
+    "-....": "6",
+    "--...": "7",
+    "---..": "8",
+    "----.": "9",
+  };
+  secondSpace = false;
+  return morseCode
+    .split(" ")
+    .map((ele) => {
+      ele = ele.trim();
+      if (ele == "") {
+        if (!secondSpace) {
+          secondSpace = true;
+          return " ";
+        } else secondSpace = false;
+      }
 
-  return morseCode;
+      if (MORSE_CODE[ele]) return MORSE_CODE[ele];
+
+      return "";
+    })
+    .join("");
 }
 
-console.log(decodeMorse(decodeBits("11001100110011"), "H"));
+console.log(decodeMorse(decodeBits("0011001100110011"), "H"));
 // console.log(
 //   decodeMorse(
 //     decodeBits(
