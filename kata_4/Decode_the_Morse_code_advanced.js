@@ -1,67 +1,67 @@
-String.prototype.customTrim = function (char = " ") {
-  let indexOfCutStart = 0;
-  let indexOfCutEnd = this.length;
-
-  for (let i = 0; i < this.length; i++) {
-    if (this[i] == char) indexOfCutStart++;
-    else break;
-  }
-
-  for (let j = this.length - 1; j >= 0; j--) {
-    if (this[j] == char) indexOfCutEnd--;
-    else break;
-  }
-  return this.slice(indexOfCutStart, indexOfCutEnd);
+//# link of the problem: https://www.codewars.com/kata/54b72c16cd7f5154e9000457
+String.prototype.trimZeros = function () {
+  return this.replace(/^0+|0+$/g, "");
 };
 function decodeBits(bits) {
-  bits = bits.customTrim("0");
+  bits = bits.trimZeros();
   console.log(bits);
-  const CODE = {
-    wordSpace: "0".repeat(7),
-    charSpace: "0".repeat(3),
-    dash: "1".repeat(3),
-    dot: "11",
-    empty: "00",
-  };
+  const frequency = getFrequencyFrom(bits);
+  getCodeBits.frequency = frequency;
+  const result = getMorseCodeFrom(bits);
+  return result;
+}
+function getFrequencyFrom(bits) {
+  const runs = bits.match(/(1+|0+)/g);
+  return Math.min(...runs.map((run) => run.length));
+}
+function getMorseCodeFrom(bits) {
+  const codeMap = [
+    [getCodeBits("wordSpace"), "   "],
+    [getCodeBits("charSpace"), " "],
+    [getCodeBits("dash"), "-"],
+    [getCodeBits("dot"), "."],
+    [getCodeBits("empty"), ""],
+  ];
+
   let result = "";
-  let j = 0;
-  while (j < bits.length) {
-    let slice = bits.slice(j, j + 7);
-    if (slice == CODE.wordSpace) {
-      j = j + 7 * 2;
-      result += "   ";
-      continue;
-    }
-    slice = bits.slice(j, j + 3);
-    if (slice == CODE.charSpace) {
-      j = j + 3 * 2;
-      result += " ";
-      continue;
-    }
-
-    if (slice == CODE.dash) {
-      j = j + 3 * 2;
-      result += "-";
-      continue;
-    }
-    slice = bits.slice(j, j + 2);
-
-    if (slice == CODE.dot) {
-      j = j + 1 * 2;
-      result += ".";
-      continue;
-    }
-
-    if (slice == CODE.empty) {
-      j = j + 1 * 2;
-      result += "";
-      continue;
+  let i = 0;
+  while (i < bits.length) {
+    for (const [bitsSequence, symbol] of codeMap) {
+      console.log(bitsSequence, symbol);
+      console.log(bitsSequence, symbol);
+      if (bits.startsWith(bitsSequence, i)) {
+        result += symbol;
+        console.log(result);
+        i += bitsSequence.length;
+        break;
+      }
     }
   }
   return result;
 }
-function getFrequencyFrom(bits) {}
+function getCodeBits(slice) {
+  const CODE = {
+    wordSpace: "0".repeat(7 * getCodeBits.frequency),
+    charSpace: "0".repeat(3 * getCodeBits.frequency),
+    dash: "1".repeat(3 * getCodeBits.frequency),
+    dot: "1".repeat(getCodeBits.frequency),
+    empty: "0".repeat(getCodeBits.frequency),
+  };
+  return CODE[slice];
+}
+
 function decodeMorse(morseCode) {
+  return morseCode
+    .split("   ")
+    .map((word) =>
+      word
+        .split(" ")
+        .map((letter) => morseMapOf(letter))
+        .join("")
+    )
+    .join(" ");
+}
+function morseMapOf(code) {
   const MORSE_CODE = {
     ".-": "A",
     "-...": "B",
@@ -99,32 +99,25 @@ function decodeMorse(morseCode) {
     "--...": "7",
     "---..": "8",
     "----.": "9",
+    ".-.-.-": ".",
   };
-  secondSpace = false;
-  return morseCode
-    .split(" ")
-    .map((ele) => {
-      ele = ele.trim();
-      if (ele == "") {
-        if (!secondSpace) {
-          secondSpace = true;
-          return " ";
-        } else secondSpace = false;
-      }
-
-      if (MORSE_CODE[ele]) return MORSE_CODE[ele];
-
-      return "";
-    })
-    .join("");
+  return MORSE_CODE[code];
 }
 
-console.log(decodeMorse(decodeBits("0011001100110011"), "H"));
+console.log(
+  decodeMorse(
+    decodeBits(
+      "1100110011001100000011000000111111001100111111001111110000000000000011001111110011111100111111000000110011001111110000001111110011001100000011"
+    )
+  )
+);
+
+// console.log(decodeMorse(decodeBits("111")));
+// console.log(decodeMorse(decodeBits("1110111")));
 // console.log(
 //   decodeMorse(
 //     decodeBits(
-//       "1100110011001100000011000000111111001100111111001111110000000000000011001111110011111100111111000000110011001111110000001111110011001100000011"
+//       "00011100010101010001000000011101110101110001010111000101000111010111010001110101110000000111010101000101110100011101110111000101110111000111010000000101011101000111011101110001110101011100000001011101110111000101011100011101110001011101110100010101000000011101110111000101010111000100010111010000000111000101010100010000000101110101000101110001110111010100011101011101110000000111010100011101110111000111011101000101110101110101110"
 //     )
-//   ),
-//   "HEY JUDE"
+//   )
 // );
