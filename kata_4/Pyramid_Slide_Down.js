@@ -1,32 +1,40 @@
 //+ In the Name of Cross
 function longestSlideDown(pyramid) {
-  if (pyramid.length == 0) return 0;
-  if (pyramid.length == 1) return pyramid[0][0];
-  let previousGridSum = [];
-  while (pyramid.length) {
-    const row = previousGridSum.length ? previousGridSum : pyramid.shift();
-    const column = pyramid.shift();
-    let result = [];
-    for (let rowIndex = 0; rowIndex < row.length; rowIndex++) {
-      const rowItem = row[rowIndex];
-      let counter = 0;
-      for (
-        let columnIndex = rowIndex;
-        counter < 2 && columnIndex < column.length;
-        columnIndex++
-      ) {
-        counter++;
-        const columnItem = column[columnIndex];
-        const sum = rowItem + columnItem;
-        const itemInCurrentResult = previousGridSum[columnIndex];
-        if (!itemInCurrentResult || itemInCurrentResult <= sum) {
-          result[columnIndex] = sum;
-        } else result[columnIndex] = itemInCurrentResult;
-      }
-      previousGridSum = result;
+  // if (pyramid.length == 0) return 0;
+  // if (pyramid.length == 1) return pyramid[0][0];
+  // let previousGridSum = [];
+  // while (pyramid.length) {
+  //   const row = previousGridSum.length ? previousGridSum : pyramid.shift();
+  //   const column = pyramid.shift();
+  //   let result = [];
+  //   for (let rowIndex = 0; rowIndex < row.length; rowIndex++) {
+  //     const rowItem = row[rowIndex];
+  //     let counter = 0;
+  //     for (
+  //       let columnIndex = rowIndex;
+  //       counter < 2 && columnIndex < column.length;
+  //       columnIndex++
+  //     ) {
+  //       counter++;
+  //       const columnItem = column[columnIndex];
+  //       const sum = rowItem + columnItem;
+  //       const itemInCurrentResult = previousGridSum[columnIndex];
+  //       if (!itemInCurrentResult || itemInCurrentResult <= sum) {
+  //         result[columnIndex] = sum;
+  //       } else result[columnIndex] = itemInCurrentResult;
+  //     }
+  //     previousGridSum = result;
+  //   }
+  // }
+  // return Math.max(...previousGridSum);
+  let dp = pyramid.map((row) => [...row]);
+
+  for (let i = pyramid.length - 2; i >= 0; i--) {
+    for (let j = 0; j < dp[i].length; i++) {
+      dp[i][j] += Math.max(dp[i + 1][j], dp[i + 1][j + 1]);
     }
   }
-  return Math.max(...previousGridSum);
+  return dp[0][0];
 }
 
 console.log(longestSlideDown([[3], [7, 4], [2, 4, 6], [8, 5, 9, 3]]));
