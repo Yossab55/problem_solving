@@ -1,10 +1,7 @@
 //+ in the name of cross
 const recoverSecret = function (triplets) {
   const Graph = new Topological(triplets);
-  Graph.createGraph();
-  console.log(Graph);
-  //# now you have graph ready and degree graph ready
-  //todo now you need to search for degree of 0 and build the result;
+  return Graph.getResult();
 };
 
 class Topological {
@@ -12,8 +9,14 @@ class Topological {
     this.triplets = triplets;
     this.mainGraph = {};
     this.degree = {};
+    this.result = [];
   }
-  createGraph() {
+  getResult() {
+    this.#createGraph();
+    this.#sort();
+    return this.result.join("");
+  }
+  #createGraph() {
     this.mainGraph = {};
     while (this.triplets.length) {
       const triplet = this.triplets.shift();
@@ -31,8 +34,8 @@ class Topological {
       this.degree[triplet[0]] = (this.degree[triplet[0]] || 0) + 1;
       if (!this.degree[this.char]) this.degree[this.char] = 0;
     } else if (this.mainGraph[this.char]) {
-      this.#convertValueToArray();
       if (!this.#checkIfItemExistsAlready(triplet[0])) {
+        this.#convertValueToArray();
         this.mainGraph[this.char].push(triplet[0]);
         this.degree[triplet[0]] = (this.degree[triplet[0]] || 0) + 1;
       }
@@ -48,6 +51,52 @@ class Topological {
     if (typeof currentValue == "string")
       return currentValue == valueToSearch ? true : false;
     return currentValue.includes(valueToSearch);
+  }
+  #sort() {
+    const size = Object.keys(this.degree).length;
+    let counter = 0;
+    while (counter < size) {
+      this.#findDegreeOfZero();
+      counter++;
+    }
+    console.log(this.result);
+  }
+  #findDegreeOfZero() {
+    this.tempDegree = Object.entries(this.degree);
+    for (let i = 0; i < this.tempDegree.length; i++) {
+      const degreeValueIndex = 1;
+
+      const currentChar = this.tempDegree[i][degreeValueIndex];
+      if (this.#checkIfThisIsDegreeOfZero(currentChar)) {
+        const charIndex = 0;
+        const char = this.tempDegree[i][charIndex];
+        this.#addChar(char);
+      }
+    }
+  }
+  #checkIfThisIsDegreeOfZero(currentChar) {
+    const degreeValueZero = 0;
+    if (currentChar == degreeValueZero) {
+      return true;
+    }
+    return false;
+  }
+  #addChar(char) {
+    const value = char;
+    this.#decreaseDegreeFrom(value);
+    delete this.degree[value];
+    delete this.mainGraph[value];
+    this.result.push(value);
+  }
+  #decreaseDegreeFrom(value) {
+    const charsToDecreaseDegree = this.mainGraph[value];
+    if (typeof charsToDecreaseDegree == "string") {
+      this.degree[charsToDecreaseDegree]--;
+    } else if (charsToDecreaseDegree) {
+      for (const char of charsToDecreaseDegree) {
+        this.degree[char]--;
+      }
+    }
   }
 }
 
