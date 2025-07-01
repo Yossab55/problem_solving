@@ -1,4 +1,5 @@
 //+ in the name of cross
+//# problem: https://www.codewars.com/kata/53f40dff5f9d31b813000774
 const recoverSecret = function (triplets) {
   const Graph = new Topological(triplets);
   return Graph.getResult();
@@ -110,3 +111,43 @@ triplets1 = [
   ["w", "h", "s"],
 ];
 console.log(recoverSecret(triplets1));
+function deepSeekAnswer(triplets) {
+  const graph = new Map();
+  const inDegree = new Map();
+
+  const addNode = (char) => {
+    if (!graph.has(char)) graph.set(char, []);
+    if (!inDegree.has(char)) inDegree.set(char, 0);
+  };
+  for (const [a, b, c] of triplets) {
+    addNode(a);
+    addNode(b);
+    addNode(c);
+
+    if (!graph.get(a).includes(b)) {
+      graph.get(a).push(b);
+      inDegree.set(b, inDegree.get(b) + 1);
+    }
+
+    if (!graph.get(b).includes(c)) {
+      graph.get(b).push(c);
+      inDegree.set(c, inDegree.get(c) + 1);
+    }
+  }
+
+  const queue = [];
+  for (const [node, degree] of inDegree) {
+    if (degree == 0) queue.push(node);
+  }
+  const result = [];
+  while (queue.length) {
+    const node = queue.shift();
+    result.push(node);
+
+    for (const neighbor of graph.get(node)) {
+      inDegree.set(neighbor, inDegree.get(neighbor) - 1);
+      if (indexedDB.get(neighbor) == 0) queue.push(neighbor);
+    }
+  }
+  return result.join("");
+}
