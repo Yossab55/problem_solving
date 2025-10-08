@@ -1,4 +1,5 @@
 //+ in the name of cross
+//# link: https://www.codewars.com/kata/51fda2d95d6efda45e00004e/train/javascript
 // it must support rank, progress and the incProgress(rank) method
 class User {
   User() {
