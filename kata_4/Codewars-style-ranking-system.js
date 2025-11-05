@@ -1,19 +1,24 @@
 //+ in the name of cross
 //# link: https://www.codewars.com/kata/51fda2d95d6efda45e00004e/train/javascript
 // it must support rank, progress and the incProgress(rank) method
+function getDifference(currentRank, kataRank) {
+  let factor = 0;
+  if (currentRank < 0 && kataRank >= 0) factor = 1;
+  if (kataRank < 0 && currentRank >= 0) factor = -1;
+  return kataRank - currentRank - factor;
+}
 const OneOrManyLevelHigherRole = {
-  //todo you need to check if zero is between both ranks or no (because there is no rank 0)
   isTrue: function isOneOrManyLevelHigher(currentRank, kataRank) {
-    return kataRank - currentRank >= 1 ? true : false;
+    return getDifference(currentRank, kataRank) >= 1 ? true : false;
   },
   getThePoints: function getOneOrManyLevelHigherPoints(currentRank, kataRank) {
-    const difference = kataRank - currentRank;
+    const difference = getDifference(currentRank, kataRank);
     return 10 * difference * difference;
   },
 };
 const sameLevelRole = {
   isTrue: function isSameLevel(currentRank, kataRank) {
-    return kataRank == currentRank ? true : false;
+    return getDifference(currentRank, kataRank) == 0 ? true : false;
   },
   getThePoints: function getSameLevelPoints(currentRank, kataRank) {
     return 3;
@@ -21,7 +26,7 @@ const sameLevelRole = {
 };
 const oneLevelLowerRole = {
   isTrue: function isOneLevel(currentRank, kataRank) {
-    return currentRank - kataRank == 1 ? true : false;
+    return getDifference(currentRank, kataRank) == -1 ? true : false;
   },
   getThePoints: function getOneLevelPoints(currentRank, kataRank) {
     return 1;
@@ -29,7 +34,7 @@ const oneLevelLowerRole = {
 };
 const twoOrMoreLevelLowerRole = {
   isTrue: function isTwoOrMoreLevelLower(currentRank, kataRank) {
-    return currentRank - kataRank > 1 ? true : false;
+    return getDifference(currentRank, kataRank) < -1 ? true : false;
   },
   getThePoints: function getTwoOrMoreLevelLowerPoints(currentRank, kataRank) {
     return 0;
@@ -50,7 +55,7 @@ class User {
     const noSuchRank = 0;
     if (this.rank == maxRank) return;
     if (kataRank > maxRank || kataRank < lowestRank || kataRank == noSuchRank)
-      throw new Error();
+      return new Error();
     for (const Rule of this.rules) {
       if (Rule.isTrue(this.rank, kataRank)) {
         this.progress += Rule.getThePoints(this.rank, kataRank);
@@ -76,11 +81,14 @@ class User {
     if (oldRank < 0 && this.rank >= 0) this.rank++;
 
     if (this.rank >= maxRank) this.rank = 8;
+    if (this.rank == 8) this.progress = 0;
   }
 }
 
 const firstUser = new User();
 
-console.log(firstUser.incProgress(1));
+console.log(firstUser.incProgress(9));
+console.log(firstUser.incProgress(-9));
+console.log(firstUser.incProgress(0));
 console.log(firstUser.rank);
 console.log(firstUser.progress);
