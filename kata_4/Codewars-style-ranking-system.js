@@ -1,5 +1,5 @@
-//+ in the name of cross
-//# link: https://www.codewars.com/kata/51fda2d95d6efda45e00004e/train/javascript
+// in the name of cross
+// link: https://www.codewars.com/kata/51fda2d95d6efda45e00004e/train/javascript
 // it must support rank, progress and the incProgress(rank) method
 function getDifference(currentRank, kataRank) {
   let factor = 0;
@@ -59,7 +59,6 @@ class User {
     for (const Rule of this.rules) {
       if (Rule.isTrue(this.rank, kataRank)) {
         this.progress += Rule.getThePoints(this.rank, kataRank);
-        console.log(this.progress);
         this.checkProgress();
         break;
       }
