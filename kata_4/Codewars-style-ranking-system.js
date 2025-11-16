@@ -5,7 +5,7 @@ function getDifference(currentRank, kataRank) {
   let factor = 0;
   if (currentRank < 0 && kataRank >= 0) factor = 1;
   if (kataRank < 0 && currentRank >= 0) factor = -1;
-  return kataRank - currentRank - factor;
+ return kataRank - currentRank - factor;
 }
 const OneOrManyLevelHigherRole = {
   isTrue: function isOneOrManyLevelHigher(currentRank, kataRank) {
